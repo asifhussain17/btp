@@ -20,7 +20,7 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-/*const db = new pg.Client({
+const db = new pg.Client({
     user: process.env.user,
     host: process.env.host,
     database: process.env.database,
@@ -29,11 +29,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 });
 
 
-*/
 
 
 
-const db = new pg.Pool({
+
+/*const db = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
@@ -42,7 +42,7 @@ const db = new pg.Pool({
 db.connect()
 .then(() => console.log("Connected to the database"))
 .catch(err => console.error("Connection error", err.stack));
-
+*/
 
 db.connect();
 
@@ -119,12 +119,20 @@ app.post("/login", async (req,res) =>{
     if(result.length>0){
         req.session.user_id = result[0].id;
         //console.log(req.session.user_id);
-        res.render("home.ejs",{user_id : req.session.user_id, user_name: result[0].user_name});
+        var name=result[0].user_name
+        res.redirect(`/home/${name}`);
+        //res.render("home.ejs",{user_id : req.session.user_id, user_name: result[0].user_name});
     }
     else{
         res.send("email or password is incorrect");
     }
 });
+
+app.get("/home/:id",requireLogin, (req, res) =>{
+    var user_name = req.params.id;
+    var user_id = req.session.user_id;
+    res.render("home.ejs",{user_id : user_id, user_name : user_name});
+})
 
 
 server.listen(port,()=>{
