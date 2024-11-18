@@ -46,19 +46,26 @@ const requireLogin = (req, res, next) => {
 };
 
 
-
+const users={};
 io.on('connection', (socket) =>{
     console.log(`A user connected with socket id: ${socket.id}`);
     
 
-    socket.on('deviceLocation', ({ latitude, longitude }) =>{
-        //console.log(`Latiutde: ${latitude}`);
-        //console.log(`longitude: ${longitude}`);
-        socket.emit('location', {latitude, longitude});
+    socket.on('deviceLocation', ({ latitude, longitude, user_id, user_name}) =>{
+        /*console.log(`Latiutde: ${latitude}`);
+        console.log(`longitude: ${longitude}`);
+        console.log(`username: ${user_name}`);*/
+        users[user_id]={latitude, longitude, user_name};
+        //console.log(users);
+        socket.emit('location', {latitude, longitude, user_id, user_name});
     });
-
+        
     
-
+    setInterval(()=>{
+    socket.emit('online_users', users)
+    },5000);
+    
+ 
 });
 
 
@@ -94,9 +101,9 @@ app.post("/login", async (req,res) =>{
     var response = await db.query("select * from users where email=$1 and password=$2",[email, password]);
     var result = response.rows;
     if(result.length>0){
-        req.session.user_id = result[0].user_id;
-        var users = await db.query("select * from users");
-        res.render("home.ejs",{users: users.rows});
+        req.session.user_id = result[0].id;
+        //console.log(req.session.user_id);
+        res.render("home.ejs",{user_id : req.session.user_id, user_name: result[0].user_name});
     }
     else{
         res.send("email or password is incorrect");

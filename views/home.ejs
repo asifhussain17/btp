@@ -20,19 +20,20 @@
 
 <div>location of devices:</div>
 
-<% if(locals.users) %>
-<% for(var i=0;i<users.length;i++){ %>
-    <p><%= users[i].user_name %></p>
-<% } %>
 
+<div id="user-list"></div>
 <div id="map"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
 
 <script>
     const socket = io();
-
-
+    
+    
+    const user_id = parseInt("<%= user_id %>", 10);
+    const user_name = "<%= user_name %>";
+    /*console.log(user_id);
+    console.log(user_name);*/
     mapboxgl.accessToken = 'pk.eyJ1IjoiYXNpZi1odXNzYWluIiwiYSI6ImNtMjY2ZmJ6eDB3aTkycXM2d20xaHkyejAifQ.nz0LlBWzsOfGpGTKqTyJgQ';
         const map = new mapboxgl.Map({
             container: 'map',
@@ -49,12 +50,14 @@
     if ("geolocation" in navigator) {
     // Function to get and send location
     function sendLocation() {
+        /*console.log(user_name);
+        console.log(user_id);*/
         navigator.geolocation.getCurrentPosition(
             position => {
                 const { latitude, longitude } = position.coords;
-
                 // Send the geolocation to the server
-                socket.emit('deviceLocation', { latitude, longitude });
+                socket.emit('deviceLocation', { latitude, longitude, user_id, user_name});
+                
             },
             error => {
                 console.error("Error getting location: ", error);
@@ -76,14 +79,59 @@
     alert("Geolocation is not supported by your browser.");
 }
 
-
-    socket.on('location', ({latitude, longitude}) =>{
-        console.log(`Latitude: ${latitude}`);
+    
+    socket.on('location', ({latitude, longitude,user_id, user_name}) =>{
+        /*console.log(`Latitude: ${latitude}`);
         console.log(`Longitude: ${longitude}`);
+        console.log(`user_id: ${user_id}`);
+        console.log(`user_name: ${user_name}`);
         marker.setLngLat([longitude, latitude]);
         marker.getElement().style.display = 'block';
-        map.setCenter([longitude, latitude]);
+        map.setCenter([longitude, latitude]);*/
     });
+
+    var user_location={};
+    socket.on('online_users', (users) =>{
+        //console.log(users);
+        const userListDiv = document.getElementById("user-list");
+        userListDiv.innerHTML = "";
+        Object.entries(users).forEach(([id, user]) => {
+            user_location[id] = { latitude: user.latitude, longitude: user.longitude };
+            const userButton = document.createElement("button");
+            userButton.innerText = user.user_name;
+            userButton.id = id;
+            // Append the button to the user list div
+            userListDiv.appendChild(userButton);
+        });
+    });
+
+
+
+
+
+
+
+    const userListDi = document.getElementById('user-list');
+  // Add a click event listener to the parent div
+  userListDi.addEventListener('click', function(event) {
+    // Check if the clicked element is a button
+    if (event.target && event.target.nodeName === 'BUTTON') {
+      // Retrieve the id of the clicked button
+      const buttonId = event.target.id;
+      
+      // For demonstration, log the button id to the console
+      /*console.log('Button clicked:', buttonId);
+      console.log(`latitude: ${user_location[buttonId].latitude}`)
+      console.log(`longitude: ${user_location[buttonId].longitude}`);*/
+      
+    marker.setLngLat([user_location[buttonId].longitude, user_location[buttonId].latitude]);
+    marker.getElement().style.display = 'block';
+    map.setCenter([user_location[buttonId].longitude, user_location[buttonId].latitude]);
+      }
+  });
+
+
+    console.log(user_location);
 </script>
 
 </body>
