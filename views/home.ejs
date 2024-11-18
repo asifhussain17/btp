@@ -34,7 +34,7 @@
     const user_name = "<%= user_name %>";
     /*console.log(user_id);
     console.log(user_name);*/
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYXNpZi1odXNzYWluIiwiYSI6ImNtMjY2ZmJ6eDB3aTkycXM2d20xaHkyejAifQ.nz0LlBWzsOfGpGTKqTyJgQ';
+    mapboxgl.accessToken = "pk.eyJ1IjoiYXNpZi1odXNzYWluIiwiYSI6ImNtMjY2ZmJ6eDB3aTkycXM2d20xaHkyejAifQ.nz0LlBWzsOfGpGTKqTyJgQ";
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -52,7 +52,7 @@
     function sendLocation() {
         /*console.log(user_name);
         console.log(user_id);*/
-        navigator.geolocation.getCurrentPosition(
+        navigator.geolocation.watchPosition(
             position => {
                 const { latitude, longitude } = position.coords;
                 // Send the geolocation to the server
@@ -113,11 +113,11 @@
 
     const userListDi = document.getElementById('user-list');
   // Add a click event listener to the parent div
-  userListDi.addEventListener('click', function(event) {
+    userListDi.addEventListener('click', function(event) {
     // Check if the clicked element is a button
     if (event.target && event.target.nodeName === 'BUTTON') {
       // Retrieve the id of the clicked button
-      const buttonId = event.target.id;
+        const buttonId = event.target.id;
       
       // For demonstration, log the button id to the console
       /*console.log('Button clicked:', buttonId);

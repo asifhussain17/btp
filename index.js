@@ -63,7 +63,7 @@ io.on('connection', (socket) =>{
     
     setInterval(()=>{
     socket.emit('online_users', users)
-    },5000);
+    },1000);
     
  
 });
