@@ -69,26 +69,24 @@
             }
         );
     }
-
     // Send location initially
     sendLocation();
-
-    // Set interval to send location every 4 seconds (4000 milliseconds)
-    setInterval(sendLocation, 4000);
 } else {
     alert("Geolocation is not supported by your browser.");
 }
 
     
-    socket.on('location', ({latitude, longitude,user_id, user_name}) =>{
+    /*socket.on('location', ({latitude, longitude,user_id, user_name}) =>{
         /*console.log(`Latitude: ${latitude}`);
         console.log(`Longitude: ${longitude}`);
         console.log(`user_id: ${user_id}`);
         console.log(`user_name: ${user_name}`);
         marker.setLngLat([longitude, latitude]);
         marker.getElement().style.display = 'block';
-        map.setCenter([longitude, latitude]);*/
-    });
+        map.setCenter([longitude, latitude]);
+    });*/
+
+
 
     var user_location={};
     socket.on('online_users', (users) =>{
@@ -109,26 +107,52 @@
 
 
 
-
-
+    /*
+    let currentIntervalId = null;
     const userListDi = document.getElementById('user-list');
   // Add a click event listener to the parent div
     userListDi.addEventListener('click', function(event) {
     // Check if the clicked element is a button
     if (event.target && event.target.nodeName === 'BUTTON') {
-      // Retrieve the id of the clicked button
         const buttonId = event.target.id;
-      
-      // For demonstration, log the button id to the console
-      /*console.log('Button clicked:', buttonId);
-      console.log(`latitude: ${user_location[buttonId].latitude}`)
-      console.log(`longitude: ${user_location[buttonId].longitude}`);*/
-      
+        if (currentIntervalId) {
+            clearInterval(currentIntervalId);
+            currentIntervalId = null;
+        }
+
+    currentIntervalId = setInterval(()=>{ 
     marker.setLngLat([user_location[buttonId].longitude, user_location[buttonId].latitude]);
     marker.getElement().style.display = 'block';
     map.setCenter([user_location[buttonId].longitude, user_location[buttonId].latitude]);
-      }
-  });
+    },1000)
+      
+}
+  });*/
+
+  let selectedUserId = null;
+  const userListDi = document.getElementById('user-list');
+userListDi.addEventListener('click', function(event) {
+    if (event.target && event.target.nodeName === 'BUTTON') {
+        selectedUserId = event.target.id;
+        console.log(selectedUserId);
+        const user = user_location[selectedUserId];
+        if (user) {
+            marker.setLngLat([user.longitude, user.latitude]);
+            marker.getElement().style.display = 'block';
+            map.setCenter([user.longitude, user.latitude]);
+        }
+    }
+});
+
+socket.on('online_users', (users) => {
+    if (selectedUserId && users[selectedUserId]) {
+        const user = users[selectedUserId];
+        console.log(user.latitude);
+        console.log(user.longitude);
+        marker.setLngLat([user.longitude, user.latitude]);
+        map.setCenter([user.longitude, user.latitude]);
+    }
+});
 
 
     console.log(user_location);
