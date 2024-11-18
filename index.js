@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     port: process.env.port
 });
 
-db.connect();
+
 */
 
 
@@ -43,6 +43,8 @@ db.connect()
 .then(() => console.log("Connected to the database"))
 .catch(err => console.error("Connection error", err.stack));
 
+
+db.connect();
 
 
 app.use(session({
