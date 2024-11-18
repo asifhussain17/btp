@@ -20,7 +20,7 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
 
 
-const db = new pg.Client({
+/*const db = new pg.Client({
     user: process.env.user,
     host: process.env.host,
     database: process.env.database,
@@ -29,6 +29,20 @@ const db = new pg.Client({
 });
 
 db.connect();
+*/
+
+
+
+const db = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+db.connect()
+.then(() => console.log("Connected to the database"))
+.catch(err => console.error("Connection error", err.stack));
+
 
 
 app.use(session({
