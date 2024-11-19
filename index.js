@@ -27,8 +27,8 @@ app.use(bodyParser.urlencoded({extended: true}));
     password: process.env.password,
     port: process.env.port
 });
-
 */
+
 
 
 
@@ -42,9 +42,6 @@ const db = new pg.Pool({
 db.connect()
 .then(() => console.log("Connected to the database"))
 .catch(err => console.error("Connection error", err.stack));
-
-
-db.connect();
 
 
 app.use(session({
@@ -135,6 +132,25 @@ app.get("/home",requireLogin, (req, res) =>{
     res.render("home.ejs",{user_id : user_id, user_name : user_name});
 })
 
+
+app.get("/traffic",requireLogin, (req,res) =>{
+    res.render("traffic.ejs");
+})
+
+app.post("/traffic",requireLogin, (req, res) =>{
+    var l1 = req.body.location_first;
+    var l2 = req.body.location_second;
+    var date = req.body.date;
+    var time = req.body.time;
+
+    console.log("Location 1:", l1);
+    console.log("Location 2:", l2);
+    console.log("Date:", date);
+    console.log("Time:", time);
+
+    
+    
+})
 
 app.get("/log_out", (req,res)=>{
     req.session.user_id=0;
