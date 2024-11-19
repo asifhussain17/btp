@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,14 +15,16 @@
 
 </head>
 <body>
-    
+-->
+
+<%- include("partials/header.ejs") %>
 <h1>Device Tracker</h1>
 
 <div>location of devices:</div>
 
 
 <div id="user-list"></div>
-<div id="map"></div>
+<div id="map" ></div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
 
@@ -158,5 +160,4 @@ socket.on('online_users', (users) => {
     console.log(user_location);
 </script>
 
-</body>
-</html>
+<%- include("partials/footer.ejs")  %>

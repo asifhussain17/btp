@@ -3,11 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Location tracker</title>
+    
+    <style>
+        .akr{
+            width:400px;
+            background-color:whitesmoke;
+        }
+    
+        .container{
+            display:flex;
+            flex-direction: column;
+            justify-content:center;
+            align-items:center;
+            margin-top:50px;
+        }
+    
+        .bkr{
+            display:flex;
+            flex-direction: column;
+            justify-content:center;
+            align-items:center;
+            border-radius: 50px;
+        }
+    
+        input{
+            width:350px;
+            height:40px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 2px solid #ccc;
+            text-align: center;
+            font-size:1rem;
+        }
+    
+        .gr{
+            background-color: blue;
+            color:white;
+            padding: 0; /* Reset padding */
+            border: none; /* Remove border */
+            outline: none; /* Remove outline */
+            box-sizing: border-box; 
+            font-weight:bold;
+            cursor: pointer;
+        }
+    
+        .gr:hover{
+            background-color: darkblue;
+        }
+    
+    
+        .sign {
+            margin-bottom: 15px;
+        }
+    
+        .sign a {
+            display: inline-block;
+            padding: 10px 30px;
+            background-color: #42b72a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            
+        }
+    
+        .sign a:hover {
+            background-color: green;
+        }
+    
+        .myaw{
+            height:130px;
+        }
+    
+        </style>
+
 </head>
 <body>
     
-    <form method="POST" action="/login">
+    <!--<form method="POST" action="/login">
         <h2>Login to your account</h2>
         <input placeholder="name" name="email">
         <br/><br/>
@@ -17,7 +91,26 @@
     </form>
     
     <br/><br/>
-    <a href="/sign_up">Create new account</a>
+    <a href="/sign_up">Create new account</a> -->
+
+    <div class="container">
+        <img src="/assets/logo.jpg" alt="book hub logo" class="myaw">
+        <div class="akr">
+        
+        <form action="/login" method="POST">
+            <div class="bkr">
+            <p>login to book hub</p>
+            <input name="email" placeholder="email" type="email" required>
+            <input name="password" placeholder="password" type="password" required>
+            <input type="submit" value="Log in" class="gr" >
+        </form>
+        <div class="sign">
+        <a href="/sign_up">Create new account</a>
+        </div>
+        
+        </div>
+        </div>
+    </div>
 
 </body>
 </html>

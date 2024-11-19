@@ -4,13 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    
+    <style>
+        .akr{
+        width:400px;
+        background-color:whitesmoke;
+    }
+
+    .container{
+        display:flex;
+        flex-direction: column;
+        justify-content:center;
+        align-items:center;
+        margin-top:50px;
+    }
+    
+
+    .bkr{
+        display:flex;
+        flex-direction: column;
+        justify-content:center;
+        align-items:center;
+    }
+
+    input{
+        width:350px;
+        height:40px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 2px solid #ccc;
+        text-align: center;
+        font-size:1rem;
+    }
+
+    .gr{
+        background-color: blue;
+        color:white;
+        padding: 0; /* Reset padding */
+        border: none; /* Remove border */
+        outline: none; /* Remove outline */
+        box-sizing: border-box; 
+        font-weight:bold;
+        cursor: pointer;
+    }
+
+    .myaw{
+        height:120px;
+    }
+
+    </style>
+
 </head>
 <body>
-    <form method="POST" action="/sign_up">
+    <!--<form method="POST" action="/sign_up">
         <input type="text" placeholder="user_name" name="user_name">
         <input type="email" placeholder="email" name="email">
         <input type="password" placeholder="password" name="password">
         <input type="submit" value="submit">
-    </form>
+    </form>-->
+    
+    <div class="container">
+        
+        <img src="/assets/logo.jpg" alt="book hub logo" class="myaw">
+    
+        <div class="akr">
+        <form action="/sign_up" method="POST">
+            <div class="bkr">
+            <p>create account</p>
+            <input type="text" placeholder="user name" name="user_name" required>
+            
+            <input type="email" placeholder="email" name="email" required>
+            
+            <input type="password" placeholder="password" name="password" required>
+            
+            <input type="submit" value="sign up" class="gr" >
+            </div>
+        </form>
+        </div>
+        </div>
+
 </body>
 </html>

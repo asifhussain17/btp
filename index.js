@@ -118,9 +118,10 @@ app.post("/login", async (req,res) =>{
     var result = response.rows;
     if(result.length>0){
         req.session.user_id = result[0].id;
+        req.session.user_name=result[0].user_name;
         //console.log(req.session.user_id);
         var name=result[0].user_name
-        res.redirect(`/home/${name}`);
+        res.redirect(`/home`);
         //res.render("home.ejs",{user_id : req.session.user_id, user_name: result[0].user_name});
     }
     else{
@@ -128,11 +129,18 @@ app.post("/login", async (req,res) =>{
     }
 });
 
-app.get("/home/:id",requireLogin, (req, res) =>{
-    var user_name = req.params.id;
+app.get("/home",requireLogin, (req, res) =>{
+    var user_name = req.session.user_name;
     var user_id = req.session.user_id;
     res.render("home.ejs",{user_id : user_id, user_name : user_name});
 })
+
+
+app.get("/log_out", (req,res)=>{
+    req.session.user_id=0;
+    req.session.user_name=null;
+    res.redirect("/");
+});
 
 
 server.listen(port,()=>{
