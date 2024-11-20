@@ -69,12 +69,13 @@ io.on('connection', (socket) =>{
     
 
     socket.on('deviceLocation', ({ latitude, longitude, user_id, user_name}) =>{
-        /*console.log(`Latiutde: ${latitude}`);
+        console.log(`Latiutde: ${latitude}`);
         console.log(`longitude: ${longitude}`);
-        console.log(`username: ${user_name}`);*/
-        users[user_id]={latitude, longitude, user_name};
-        //console.log(users);
-        socket.emit('location', {latitude, longitude, user_id, user_name});
+        console.log(`username: ${user_name}`);
+        /*users[user_id]={latitude, longitude, user_name};
+        console.log(users);*/
+        var user = user_name;
+        io.emit('location', {latitude, longitude, user_id, user});
     });
         
     
@@ -97,11 +98,6 @@ io.on('connection', (socket) =>{
             console.log(`User with ID ${recipient_id} is not connected.`);
         }
     });
-
-
-    setInterval(()=>{
-    socket.emit('online_users', users)
-    },1000);
     
  
 });
@@ -184,7 +180,7 @@ app.post("/traffic",requireLogin, async (req, res) =>{
             params: {
                 access_token: process.env.MAPBOX_ACCESS_TOKEN,
                 limit: 1,
-                country: 'IN'
+                //country: 'IN'
             }
         });
 
@@ -207,7 +203,7 @@ app.post("/traffic",requireLogin, async (req, res) =>{
             params: {
                 access_token: process.env.MAPBOX_ACCESS_TOKEN,
                 limit: 1,
-                country: 'IN'
+                //country: 'IN'
             }
         });
 
