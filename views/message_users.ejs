@@ -1,0 +1,16 @@
+<%- include("partials/header.ejs") %>
+<div class="sde">
+<h1>Users</h1>
+<%if(locals.data){%> 
+    <% for(var i=0;i<data.length;i++){%>
+        <div class="rona">
+        <a href="/message/<%= data[i].id %> "> <h2> <%= data[i].user_name %> </h2> </a>
+        </div>
+<%}%>  
+<%}%>
+</div>
+
+
+</main>
+</body>
+</html>

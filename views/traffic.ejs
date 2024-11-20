@@ -1,18 +1,24 @@
 <%- include("partials/header.ejs") %>
 
-<form method="POST" action="/traffic">
-    <input type="text" name="location_first" placeholder="enter firstlo cation" required>
-    <input type="text" name="location_second" placeholder="enter second location" required>
-    <input type="date" id="date" name="date" placeholder="enter date" required><br><br>
-    <input type="time" id="time" name="time" placeholder="enter time" required><br><br>
-    <input type="submit" placeholder="submit">
+<div class="traffic_div">
+<p class="text-2xl text-center text-gray-800">Predict traffic between two places</p>
+<form class="traffic_form" method="POST" action="/traffic">
+    <input type="text" name="location_first" placeholder="enter first location" required class="border border-gray-300 p-2 rounded">
+    <input type="text" name="location_second" placeholder="enter second location" required class="border border-gray-300 p-2 rounded">
+    <input type="date" id="date" name="date" placeholder="enter date" required class="border border-gray-300 p-2 rounded">
+    <input type="time" id="time" name="time" placeholder="enter time" required class="border border-gray-300 p-2 rounded">
+    <input type="submit" class="bq" placeholder="submit">
 </form>
+</div>
 
-
-<div id="map" ></div>
+<!--<div id="map" ></div>
 
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
 <script>
+
+
+
+
     mapboxgl.accessToken = "pk.eyJ1IjoiYXNpZi1odXNzYWluIiwiYSI6ImNtMjY2ZmJ6eDB3aTkycXM2d20xaHkyejAifQ.nz0LlBWzsOfGpGTKqTyJgQ";
         const map = new mapboxgl.Map({
             container: 'map',
@@ -25,5 +31,98 @@
         const marker = new mapboxgl.Marker({ color: 'red' }).setLngLat([0,0]).addTo(map);
         marker.getElement().style.display = 'none';
 </script>
+-->
 
-<%- include("partials/footer.ejs")  %>
+<% if (error) { %>
+    <div class="error"><%= error %></div>
+<% } %>
+
+
+<% if (route && coords1 && coords2) { %>
+    <div id="map"></div>
+
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script>
+        
+        mapboxgl.accessToken = "<%= mapboxToken %>";
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [<%= (coords1[0] + coords2[0]) / 2 %>, <%= (coords1[1] + coords2[1]) / 2 %>],
+            zoom: 10
+        });
+
+        // Add navigation controls
+        map.addControl(new mapboxgl.NavigationControl());
+
+        // Add markers for the two locations
+        new mapboxgl.Marker({ color: 'green' })
+            .setLngLat([<%= coords1[0] %>, <%= coords1[1] %>])
+            .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('Location 1'))
+            .addTo(map);
+
+        new mapboxgl.Marker({ color: 'blue' })
+            .setLngLat([<%= coords2[0] %>, <%= coords2[1] %>])
+            .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('Location 2'))
+            .addTo(map);
+
+        // Add the route as a layer
+        map.on('load', () => {
+            // Add the route as a GeoJSON source
+            map.addSource('route', {
+                type: 'geojson',
+                data: {
+                    type: 'Feature',
+                    geometry: <%- JSON.stringify(route) %>
+                }
+            });
+
+            // Add the route as a line layer
+            map.addLayer({
+                id: 'route',
+                type: 'line',
+                source: 'route',
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                paint: {
+                    'line-color': '#FF0000',
+                    'line-width': 4
+                }
+            });
+
+            // Add traffic data as a layer (requires appropriate Mapbox plan)
+            // Note: Ensure your Mapbox plan includes Traffic data access
+            map.addSource('traffic', {
+                type: 'vector',
+                url: 'mapbox://mapbox.mapbox-traffic-v1'
+            });
+
+            map.addLayer({
+                'id': 'traffic-flow',
+                'type': 'line',
+                'source': 'traffic',
+                'source-layer': 'traffic',
+                'layout': {},
+                'paint': {
+                    'line-color': [
+                        'case',
+                        ['==', ['get', 'congestion'], 'low'], '#00FF00',
+                        ['==', ['get', 'congestion'], 'moderate'], '#FFFF00',
+                        ['==', ['get', 'congestion'], 'heavy'], '#FF0000',
+                        '#CCCCCC'
+                    ],
+                    'line-width': 2
+                }
+            });
+        });
+    </script>
+<% } %>
+
+
+
+</main>
+</body> 
+</html>

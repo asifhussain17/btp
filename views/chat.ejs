@@ -1,0 +1,78 @@
+<%- include("partials/header.ejs") %>
+
+
+<div class="chat-container">
+    <div id="messages" class="messages-container">
+        <% if(locals.chat_history){ %>
+            <% for(var i = 0; i < chat_history.length; i++){ %>
+                <% if(chat_history[i].sender_id === sender) { %>
+                    <!-- Sender's message -->
+                    <div class="message sender">
+                        <p><%= chat_history[i].message %></p>
+                    </div>
+                <% } else { %>
+                    <!-- Receiver's message -->
+                    <div class="message receiver">
+                        <p><%= chat_history[i].message %></p>
+                    </div>
+                <% } %>
+            <% } %>
+        <% } %>
+    </div>
+
+    
+        <form class="chat-input"> 
+        <input id="message" type="text" placeholder="Enter message"/>
+        <button id="sendBtn">Send</button>
+        </form>
+    
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io(); // Initialize Socket.IO client
+
+    const sender = parseInt("<%= sender %>", 10);
+    const receiver = parseInt("<%= receiver %>", 10);
+
+    socket.emit('register-user', sender);
+    
+    const sendBtn = document.getElementById("sendBtn");
+    const messageInput = document.getElementById("message");
+    const allMessages = document.getElementById("messages");
+    
+    // Scroll to the bottom of the messages when a new message arrives
+    const scrollToBottom = () => {
+        allMessages.scrollTop = allMessages.scrollHeight;
+    };
+
+    socket.on("message", ({message, sender_id}) => {
+        const p = document.createElement("p");
+        p.innerText = message;
+
+        const div = document.createElement("div");
+        div.classList.add("message");
+
+        if (sender_id === sender) {
+            div.classList.add("sender"); // For the sender's messages
+        } else {
+            div.classList.add("receiver"); // For the receiver's messages
+        }
+
+        div.appendChild(p);
+        allMessages.appendChild(div);
+        scrollToBottom();  // Scroll to the bottom after new message
+    });
+
+    sendBtn.addEventListener("click", () => {
+        const message = messageInput.value;
+        socket.emit('user-message', { message: message, recipient_id: receiver, sender_id: sender });
+        messageInput.value = ""; // Clear the input after sending
+    });
+
+    // Scroll to the bottom initially when the chat loads
+    scrollToBottom();
+</script>
+
+
+<%- include("partials/footer.ejs")  %>
