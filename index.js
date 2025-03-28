@@ -23,14 +23,17 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended: true}));
 
 
+
 /*const db = new pg.Client({
-    user: process.env.user,
-    host: process.env.host,
-    database: process.env.database,
-    password: process.env.password,
-    port: process.env.port
+   user: "postgres",
+   host: "localhost",
+   database: "btp",
+   password: "Qwert..",
+   port: 5432,
 });
-*/
+
+ db.connect(); */
+
 
 
 
@@ -67,23 +70,10 @@ const userSocketMap={};
 io.on('connection', (socket) =>{
     console.log(`A user connected with socket id: ${socket.id}`);
     
-
-    socket.on('deviceLocation', ({ latitude, longitude, user_id, user_name}) =>{
-        console.log(`Latiutde: ${latitude}`);
-        console.log(`longitude: ${longitude}`);
-        console.log(`username: ${user_name}`);
-        /*users[user_id]={latitude, longitude, user_name};
-        console.log(users);*/
-        var user = user_name;
-        io.emit('location', {latitude, longitude, user_id, user});
-    });
-        
-    
     socket.on('register-user', (user_id) => {
         userSocketMap[user_id] = socket.id;
         //console.log(`User ${user_id} is connected with socket ID: ${socket.id}`);
     });
-
     socket.on('user-message', async ({ message, recipient_id, sender_id }) => {
         const recipientSocketId = userSocketMap[recipient_id];
         const senderSocketId = userSocketMap[sender_id];
@@ -97,9 +87,16 @@ io.on('connection', (socket) =>{
         } else {
             console.log(`User with ID ${recipient_id} is not connected.`);
         }
+    });   
+    socket.on('deviceLocation', ({ latitude, longitude, user_id, user_name}) =>{
+        console.log(`Latiutde: ${latitude}`);
+        console.log(`longitude: ${longitude}`);
+        console.log(`username: ${user_name}`);
+        /*users[user_id]={latitude, longitude, user_name};
+        console.log(users);*/
+        var user = user_name;
+        io.emit('location', {latitude, longitude, user_id, user});
     });
-    
- 
 });
 
 
