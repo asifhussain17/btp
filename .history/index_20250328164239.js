@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 
 
-const db = new pg.Client({
+/*const db = new pg.Client({
    user: "postgres",
    host: "localhost",
    database: "btp",
@@ -32,13 +32,13 @@ const db = new pg.Client({
    port: 5432,
 });
 
- db.connect(); 
+ db.connect(); */
 
 
 
 
 
-/*
+
 const db = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -48,7 +48,7 @@ const db = new pg.Pool({
 db.connect()
 .then(() => console.log("Connected to the database"))
 .catch(err => console.error("Connection error", err.stack));
-*/
+
 
 app.use(session({
     secret: 'secret', // Change this to a more secure random string in production
@@ -308,50 +308,6 @@ app.get("/message/:id", requireLogin, async (req, res) =>{
     var y = await db.query("select * from messages where (sender_id=$1 and receiver_id=$2) or (sender_id=$2 and receiver_id=$1) order by timestamp",[sender, receiver]);
     //console.log(y.rows);
     res.render("chat.ejs", {sender: sender, receiver: receiver, chat_history : y.rows});
-});
-
-
-
-
-
-
-app.get("/taxi_demand", requireLogin, (req,res)=>{
-    res.render("taxi.ejs",{mapboxToken: process.env.MAPBOX_ACCESS_TOKEN});
-});
-
-
-app.post("/predict_demand", requireLogin, async (req,res)=>{
-    var src_lat = req.body.sourceLat;
-    var src_long = req.body.sourceLon;
-    var dst_lat = req.body.destLat;
-    var dst_long = req.body.destLon;
-    var time = req.body.time;
-
-    console.log("Source Latitude:", src_lat);
-    console.log("Source Longitude:", src_long);
-    console.log("Destination Latitude:", dst_lat);
-    console.log("Destination Longitude:", dst_long);
-    console.log("time", time);
-
-    try {
-        const response = await axios.post('http://127.0.0.1:5000/predict', {
-            sourceLat: src_lat,
-            sourceLon: src_long,
-            destLat: dst_lat,
-            destLon: dst_long,
-            time: time
-        });
-
-        const predictedDemand = response.data.demand;
-        console.log("Predicted Taxi Demand:", predictedDemand);
-
-        res.send(`<h1>Predicted Taxi Demand: ${predictedDemand}</h1>`);
-
-    } catch (error) {
-        console.error("Error connecting to Python server:", error);
-        res.send(`<h1>Error predicting demand</h1>`);
-    }
-
 });
 
 

@@ -1,0 +1,24 @@
+<%- include("partials/header.ejs") %>
+    <h1>Taxi Demand Prediction</h1>
+    
+    <div id="map" style="width: 100%; height: 500px;"></div>
+
+<!-- Mapbox JS and CSS -->
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+
+<script>
+    // Replace YOUR_MAPBOX_ACCESS_TOKEN with your actual token
+    mapboxgl.accessToken = "<%= mapboxToken %>";;
+    
+    const map = new mapboxgl.Map({
+        container: 'map', // ID of the div
+        style: 'mapbox://styles/mapbox/streets-v11', // Map style
+        center: [-74.0060, 40.7128], // Longitude, Latitude of New York City
+        zoom: 10 // Zoom level
+    });
+</script>
+
+</main>
+</body> 
+</html>

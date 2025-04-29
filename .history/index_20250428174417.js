@@ -315,22 +315,22 @@ app.get("/message/:id", requireLogin, async (req, res) =>{
 
 
 
-app.get("/taxi_demand", requireLogin, (req,res)=>{
+app.get("/taxi_demand", requireLogin, async (req,res)=>{
     res.render("taxi.ejs",{mapboxToken: process.env.MAPBOX_ACCESS_TOKEN});
 });
 
 
-app.post("/predict_demand", requireLogin, async (req,res)=>{
+app.post("/predict_demand", requireLogin, (req,res)=>{
     var src_lat = req.body.sourceLat;
     var src_long = req.body.sourceLon;
     var dst_lat = req.body.destLat;
-    var dst_long = req.body.destLon;
+    var dst_lon = req.body.destLon;
     var time = req.body.time;
 
     console.log("Source Latitude:", src_lat);
     console.log("Source Longitude:", src_long);
     console.log("Destination Latitude:", dst_lat);
-    console.log("Destination Longitude:", dst_long);
+    console.log("Destination Longitude:", dst_lon);
     console.log("time", time);
 
     try {
@@ -345,7 +345,7 @@ app.post("/predict_demand", requireLogin, async (req,res)=>{
         const predictedDemand = response.data.demand;
         console.log("Predicted Taxi Demand:", predictedDemand);
 
-        res.send(`<h1>Predicted Taxi Demand: ${predictedDemand}</h1>`);
+        res.send(`<h1>Predicted Taxi Demand: ${predictedDemand}</h1> <br> <a href="/">Predict Again</a>`);
 
     } catch (error) {
         console.error("Error connecting to Python server:", error);

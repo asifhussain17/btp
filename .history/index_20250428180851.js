@@ -345,7 +345,7 @@ app.post("/predict_demand", requireLogin, async (req,res)=>{
         const predictedDemand = response.data.demand;
         console.log("Predicted Taxi Demand:", predictedDemand);
 
-        res.send(`<h1>Predicted Taxi Demand: ${predictedDemand}</h1>`);
+        res.send(`<h1>Predicted Taxi Demand: ${predictedDemand}</h1> <br> <a href="/">Predict Again</a>`);
 
     } catch (error) {
         console.error("Error connecting to Python server:", error);

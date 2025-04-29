@@ -1,0 +1,121 @@
+<script>
+    mapboxgl.accessToken = "<%= mapboxToken %>";
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-74.0060, 40.7128],
+        zoom: 10,
+        maxBounds: [
+            [-74.2591, 40.4774],
+            [-73.7004, 40.9176]
+        ]
+    });
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+    let clickCount = 0;
+    let markers = [];
+    let routeLine = null;  // Line variable
+
+    map.on('click', (e) => {
+        const lngLat = e.lngLat;
+
+        if (clickCount === 0) {
+            // First click → Source
+            document.getElementById('sourceLat').value = lngLat.lat.toFixed(6);
+            document.getElementById('sourceLon').value = lngLat.lng.toFixed(6);
+
+            const sourceMarker = new mapboxgl.Marker({ color: 'green' })
+                .setLngLat([lngLat.lng, lngLat.lat])
+                .addTo(map);
+
+            markers.push(sourceMarker);
+
+            clickCount++;
+            alert('Source selected! Now click to select Destination.');
+
+        } else if (clickCount === 1) {
+            // Second click → Destination
+            document.getElementById('destLat').value = lngLat.lat.toFixed(6);
+            document.getElementById('destLon').value = lngLat.lng.toFixed(6);
+
+            const destMarker = new mapboxgl.Marker({ color: 'red' })
+                .setLngLat([lngLat.lng, lngLat.lat])
+                .addTo(map);
+
+            markers.push(destMarker);
+
+            clickCount++;
+
+            // After both points selected, draw a line
+            drawRoute();
+
+            alert('Destination selected! Fill time and submit.');
+
+        } else {
+            // Reset everything if clicked again
+            alert('Resetting selections...');
+            markers.forEach(marker => marker.remove());
+            markers = [];
+            clickCount = 0;
+
+            // Remove existing line if any
+            if (routeLine) {
+                map.removeLayer('route');
+                map.removeSource('route');
+                routeLine = null;
+            }
+
+            document.getElementById('sourceLat').value = '';
+            document.getElementById('sourceLon').value = '';
+            document.getElementById('destLat').value = '';
+            document.getElementById('destLon').value = '';
+        }
+    });
+
+    function drawRoute() {
+        const srcLat = parseFloat(document.getElementById('sourceLat').value);
+        const srcLon = parseFloat(document.getElementById('sourceLon').value);
+        const dstLat = parseFloat(document.getElementById('destLat').value);
+        const dstLon = parseFloat(document.getElementById('destLon').value);
+
+        const routeGeoJSON = {
+            'type': 'Feature',
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': [
+                    [srcLon, srcLat],
+                    [dstLon, dstLat]
+                ]
+            }
+        };
+
+        // If previous route exists, remove it
+        if (map.getSource('route')) {
+            map.removeLayer('route');
+            map.removeSource('route');
+        }
+
+        map.addSource('route', {
+            'type': 'geojson',
+            'data': routeGeoJSON
+        });
+
+        map.addLayer({
+            'id': 'route',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#ff7e5f',
+                'line-width': 4
+            }
+        });
+
+        routeLine = routeGeoJSON;
+    }
+</script>
