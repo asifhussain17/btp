@@ -7,11 +7,11 @@
 <div id="map" style="width: 100%; height: 500px;"></div>
 
 <!-- Form -->
-<form id="predictionForm" style="margin-bottom: 20px;" class="eng">
+<form id="predictionForm" style="margin-bottom: 20px;">
     <label for="time">Time</label>
-    <input type="time" id="time" name="time" value="08:00" required>
+    <input type="time" id="time" name="time" required>
     <br><br>
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Predict Demand</button>
+    <button type="submit">Predict Demand</button>
 </form>
 
 
@@ -27,11 +27,11 @@
 
 <!-- Button to trigger it -->
 <div style="text-align: center; margin-top: 30px;">
-    <button onclick="loadHourlyTrend()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Show Hourly Demand Trend</button>
+    <button onclick="loadHourlyTrend()">Show Hourly Demand Trend</button>
 </div>
 
 <!-- Include this in your existing HTML file below the prediction result div -->
-<canvas id="hourlyChart"></canvas>
+<canvas id="hourlyChart" max-width="800" max-height="400" style="margin-top: 40px;"></canvas>
 
 
 <!-- Mapbox JS and CSS -->

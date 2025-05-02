@@ -355,7 +355,7 @@ app.post("/predict_demand", requireLogin, async (req,res)=>{
 });
 
 app.get("/stats",requireLogin, (req,res) => {
-    res.render("stats.ejs",{mapboxToken: process.env.MAPBOX_ACCESS_TOKEN});
+    res.render("stats.ejs");
 })
 
 

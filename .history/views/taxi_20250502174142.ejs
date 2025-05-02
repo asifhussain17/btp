@@ -1,0 +1,184 @@
+<%- include("partials/header.ejs") %>
+
+<h1>Taxi Demand Prediction</h1>
+
+<!-- Form -->
+<form id="predictionForm" style="margin-bottom: 20px;">
+    <label>Source Latitude:</label>
+    <input type="text" id="sourceLat" name="sourceLat" readonly required>
+
+    <label>Source Longitude:</label>
+    <input type="text" id="sourceLon" name="sourceLon" readonly required>
+
+    <br><br>
+
+    <label>Destination Latitude:</label>
+    <input type="text" id="destLat" name="destLat" readonly required>
+
+    <label>Destination Longitude:</label>
+    <input type="text" id="destLon" name="destLon" readonly required>
+
+    <br><br>
+
+    <label for="time">Time (24h format HH:MM):</label>
+    <input type="time" id="time" name="time" required>
+
+    <br><br>
+
+    <button type="submit">Predict Demand</button>
+</form>
+
+<div id="result"></div>
+
+<!-- Map container -->
+<div id="map" style="width: 100%; height: 500px;"></div>
+
+<!-- Mapbox JS and CSS -->
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+    mapboxgl.accessToken = "<%= mapboxToken %>";
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-74.0060, 40.7128],
+        zoom: 10,
+        maxBounds: [
+            [-74.2591, 40.4774],
+            [-73.7004, 40.9176]
+        ]
+    });
+
+    map.addControl(new mapboxgl.NavigationControl());
+
+    let clickCount = 0;
+    let markers = [];
+    let routeLine = null;
+
+    map.on('click', (e) => {
+        const lngLat = e.lngLat;
+
+        if (clickCount === 0) {
+            document.getElementById('sourceLat').value = lngLat.lat.toFixed(6);
+            document.getElementById('sourceLon').value = lngLat.lng.toFixed(6);
+
+            const sourceMarker = new mapboxgl.Marker({ color: 'green' })
+                .setLngLat([lngLat.lng, lngLat.lat])
+                .addTo(map);
+
+            markers.push(sourceMarker);
+
+            clickCount++;
+            alert('Source selected! Now click to select Destination.');
+
+        } else if (clickCount === 1) {
+            document.getElementById('destLat').value = lngLat.lat.toFixed(6);
+            document.getElementById('destLon').value = lngLat.lng.toFixed(6);
+
+            const destMarker = new mapboxgl.Marker({ color: 'red' })
+                .setLngLat([lngLat.lng, lngLat.lat])
+                .addTo(map);
+
+            markers.push(destMarker);
+            clickCount++;
+            drawRoute();
+            alert('Destination selected! Fill time and submit.');
+
+        } else {
+            alert('Resetting selections...');
+            markers.forEach(marker => marker.remove());
+            markers = [];
+            clickCount = 0;
+
+            if (routeLine) {
+                map.removeLayer('route');
+                map.removeSource('route');
+                routeLine = null;
+            }
+
+            document.getElementById('sourceLat').value = '';
+            document.getElementById('sourceLon').value = '';
+            document.getElementById('destLat').value = '';
+            document.getElementById('destLon').value = '';
+        }
+    });
+
+    function drawRoute() {
+        const srcLat = parseFloat(document.getElementById('sourceLat').value);
+        const srcLon = parseFloat(document.getElementById('sourceLon').value);
+        const dstLat = parseFloat(document.getElementById('destLat').value);
+        const dstLon = parseFloat(document.getElementById('destLon').value);
+
+        const routeGeoJSON = {
+            'type': 'Feature',
+            'geometry': {
+                'type': 'LineString',
+                'coordinates': [
+                    [srcLon, srcLat],
+                    [dstLon, dstLat]
+                ]
+            }
+        };
+
+        if (map.getSource('route')) {
+            map.removeLayer('route');
+            map.removeSource('route');
+        }
+
+        map.addSource('route', {
+            'type': 'geojson',
+            'data': routeGeoJSON
+        });
+
+        map.addLayer({
+            'id': 'route',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#ff7e5f',
+                'line-width': 4
+            }
+        });
+
+        routeLine = routeGeoJSON;
+    }
+
+    // 🔁 Handle form submit without backend route
+    document.getElementById('predictionForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const sourceLat = document.getElementById('sourceLat').value;
+        const sourceLon = document.getElementById('sourceLon').value;
+        const destLat = document.getElementById('destLat').value;
+        const destLon = document.getElementById('destLon').value;
+        const time = document.getElementById('time').value;
+
+        try {
+            const response = await axios.post('http://127.0.0.1:5000/predict', {
+                sourceLat,
+                sourceLon,
+                destLat,
+                destLon,
+                time
+            });
+
+            const demand = response.data.demand;
+            document.getElementById('result').innerHTML = `<h2>Predicted Taxi Demand: ${demand}</h2>`;
+
+        } catch (err) {
+            document.getElementById('result').innerHTML = `<h2>Error predicting demand</h2>`;
+            console.error("Prediction error:", err);
+        }
+    });
+</script>
+
+</main>
+</body> 
+</html>

@@ -400,7 +400,7 @@ footer {
         color: #1f2937;
     }
 
-    .eng {
+    form {
         background: white;
         padding: 20px;
         border-radius: 10px;
@@ -428,7 +428,7 @@ footer {
     button {
         padding: 10px 20px;
         background-color: #2563eb;
-        color: blue;
+        color: white;
         border: none;
         border-radius: 6px;
         cursor: pointer;

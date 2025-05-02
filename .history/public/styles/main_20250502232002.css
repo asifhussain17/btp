@@ -400,7 +400,7 @@ footer {
         color: #1f2937;
     }
 
-    .eng {
+    form {
         background: white;
         padding: 20px;
         border-radius: 10px;
@@ -427,8 +427,8 @@ footer {
 
     button {
         padding: 10px 20px;
-        background-color: #2563eb;
-        color: blue;
+        background: #2563eb;
+        color: white;
         border: none;
         border-radius: 6px;
         cursor: pointer;
@@ -453,7 +453,7 @@ footer {
     }
 
     #hourlyChart {
-        width:1000px;
+        max-width: 900px;
         margin: 40px auto 0 auto;
         display: block;
         background-color: white;
